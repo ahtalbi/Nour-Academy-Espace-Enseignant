@@ -1,0 +1,1 @@
+import { eleves, groupes } from "./assets/data";
