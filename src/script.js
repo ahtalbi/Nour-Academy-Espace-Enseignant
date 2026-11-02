@@ -1,7 +1,12 @@
 import { eleves, groupes } from "./assets/data.js";
 
+// afficher les elevees
 const elevesContainer = document.getElementById("liste-eleves");
-const elevesElements = eleves.map((eleve) => {
+const elevesElements = eleves.map(creerLigne);
+
+elevesContainer.append(...elevesElements);
+
+function creerLigne(eleve) {
     // li element
     const li = document.createElement("li");
     li.dataset.id = eleve.id;
@@ -38,7 +43,7 @@ const elevesElements = eleves.map((eleve) => {
     // span grade
     const spanGrade = document.createElement("span");
     spanGrade.classList.add("font-serif", "text-xl");
-    spanGrade.textContent = (eleve.notes.length === 0) ? "—" : Number((eleve.notes.reduce((cr, pr) => pr + cr) / eleve.notes.length).toFixed(1));
+    spanGrade.textContent = (eleve.notes.length === 0) ? "—" : `${Number((eleve.notes.reduce((cr, pr) => pr + cr) / eleve.notes.length).toFixed(1))} / 20`.replace('.', ',');
 
     // append button elements
     spanInfo.append(spanName, spanAbsences);
@@ -92,6 +97,4 @@ const elevesElements = eleves.map((eleve) => {
     li.append(div, p);
 
     return li;
-});
-
-elevesContainer.append(...elevesElements);
+}
