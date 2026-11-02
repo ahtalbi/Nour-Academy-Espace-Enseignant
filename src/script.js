@@ -1,42 +1,12 @@
 import { eleves, groupes } from "./assets/data.js";
 
-// ------------- ajouter les eleves -----------------
-
-// <li class="rounded-2xl border border-line bg-card p-3" data-id="1">
-//     <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
-//         <button type="button" class="btn-fiche flex min-h-11 flex-1 items-center gap-3 text-left">
-//             <span class="grid size-10 shrink-0 place-items-center rounded-full bg-brand-soft text-sm font-semibold text-brand">SA</span>
-//             <span class="min-w-0 flex-1">
-//                 <span class="block truncate font-medium">Sara Alaoui</span>
-//                 <span class="block text-sm text-muted">1 absence</span>
-//             </span>
-//             <span class="font-serif text-xl">13,5 / 20</span>
-//         </button>
-//         <div class="flex gap-2">
-//             <button type="button"
-//                 class="btn-absent h-11 rounded-full border border-line px-3 sm:px-4 text-sm font-medium hover:bg-paper">Absent</button>
-//             <label class="flex-1">
-//                 <span class="sr-only">Note sur 20</span>
-//                 <input type="number" min="0" max="20" step="0.5" placeholder="Note"
-//                     class="h-11 w-full rounded-full border border-line bg-paper px-4 text-sm lg:w-24">
-//             </label>
-//             <button type="button"
-//                 class="btn-note h-11 rounded-full bg-ink px-3 sm:px-4 text-sm font-medium text-white hover:bg-brand">Ajouter
-//                 la note</button>
-//         </div>
-//     </div>
-//     <p class="message mt-2 text-xs text-alert" hidden>La note doit être un nombre entre 0 et 20.</p>
-// </li>
-
-// { id: 1,  prenom: "Yassine", nom: "El Amrani", groupeId: 1, telephoneParent: "0661234501", absences: 2, notes: [14, 12.5, 16] },
-
 const elevesContainer = document.getElementById("liste-eleves");
 const elevesElements = eleves.map((eleve) => {
     // li element
     const li = document.createElement("li");
     li.dataset.id = eleve.id;
     li.classList.add("rounded-2xl", "border", "border-line", "bg-card", "p-3");
-    
+
     // div inside the li
     const div = document.createElement("div");
     div.classList.add("flex", "flex-col", "gap-3", "lg:flex-row", "lg:items-center");
@@ -68,10 +38,59 @@ const elevesElements = eleves.map((eleve) => {
     // span grade
     const spanGrade = document.createElement("span");
     spanGrade.classList.add("font-serif", "text-xl");
-    spanGrade.textContent = `${eleve.note} / 20`;
+    spanGrade.textContent = (eleve.notes.length === 0) ? "—" : Number((eleve.notes.reduce((cr, pr) => pr + cr) / eleve.notes.length).toFixed(1));
 
+    // append button elements
+    spanInfo.append(spanName, spanAbsences);
+    button.append(spanProfile, spanInfo, spanGrade);
+
+    // actions div
+    const actions = document.createElement("div");
+    actions.classList.add("flex", "gap-2");
+
+    // absent button
+    const buttonAbsent = document.createElement("button");
+    buttonAbsent.type = "button";
+    buttonAbsent.classList.add("btn-absent", "h-11", "rounded-full", "border", "border-line", "px-3", "sm:px-4", "text-sm", "font-medium", "hover:bg-paper", "hover:cursor-pointer");
+    buttonAbsent.textContent = "Absent";
+
+    // input label
+    const label = document.createElement("label");
+    label.classList.add("flex-1");
+
+    // span for bline people
+    const spanForBlindPeople = document.createElement("span");
+    spanForBlindPeople.classList.add("sr-only");
+    spanForBlindPeople.textContent = "Note sur 20";
+
+    // input of note
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.max = "20";
+    input.step = "0.5";
+    input.placeholder = "Note";
+    input.classList.add("h-11", "w-full", "rounded-full", "border", "border-line", "bg-paper", "px-4", "text-sm", "lg:w-24");
+
+    // append to label its elemets
+    label.append(spanForBlindPeople, input);
+
+    // botton of ajouter la note
+    const buttonNote = document.createElement("button");
+    buttonNote.type = "button";
+    buttonNote.classList.add("btn-note", "h-11", "rounded-full", "bg-ink", "px-3", "sm:px-4", "text-sm", "font-medium", "text-white", "hover:bg-brand", "hover:cursor-pointer");
+    buttonNote.textContent = "Ajouter la note";
+    
     // p inside the li
     const p = document.createElement("p");
+    p.classList.add("message", "mt-2", "text-xs", "text-alert");
+    p.setAttribute("hidden", true);
+    
+    // append to li
+    actions.append(buttonAbsent, label, buttonNote);
+    div.append(button, actions);
+    li.append(div, p);
+
     return li;
 });
 
