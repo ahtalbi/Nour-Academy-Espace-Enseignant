@@ -5,6 +5,41 @@ const elevesContainer = document.getElementById("liste-eleves");
 const elevesElements = eleves.map(creerLigne);
 
 elevesContainer.append(...elevesElements);
+updateGlobalStatus();
+
+// calculer la moyenne 
+function moyenneEleve(eleve) {
+    if (eleve.notes.length === 0) return null;
+    return eleve.notes.reduce((total, note) => total + note, 0) / eleve.notes.length;
+}
+
+// update global status
+function updateGlobalStatus() {
+    const notes = eleves.flatMap(eleve => eleve.notes);
+    const totalAbsences = eleves.reduce((total, eleve) => total + eleve.absences, 0);
+    const alertedEleves = eleves.filter(eleve => eleve.absences >= 3);
+    const meilleureMoyenne = eleves.map(eleve => ({ eleve, moyenne: moyenneEleve(eleve) })).filter(item => item.moyenne !== null).sort((a, b) => b.moyenne - a.moyenne)[0];
+
+    const formatNote = note => Number(note.toFixed(1)).toString().replace(".", ",");
+    const moyenneGroupe = notes.length ? notes.reduce((total, note) => total + note, 0) / notes.length : null;
+
+    document.getElementById("bilan-moyenne").textContent = moyenneGroupe === null ? "—" : formatNote(moyenneGroupe);
+    document.getElementById("bilan-absences").textContent = totalAbsences;
+    document.getElementById("bilan-alertes").textContent = alertedEleves.length;
+    document.getElementById("bilan-meilleur").textContent = meilleureMoyenne ? `${meilleureMoyenne.eleve.prenom} ${meilleureMoyenne.eleve.nom} — ${formatNote(meilleureMoyenne.moyenne)} / 20` : "—";
+
+    const listeParents = document.getElementById("liste-parents");
+    listeParents.replaceChildren();
+
+    alertedEleves.forEach(eleve => {
+        const ligne = document.createElement("li");
+        ligne.classList.add("rounded-xl", "bg-card", "px-3", "py-2", "ring-1", "ring-line");
+        ligne.textContent = `${eleve.prenom} ${eleve.nom} — ${eleve.telephoneParent}`;
+        listeParents.append(ligne);
+    });
+
+    document.getElementById("aucune-alerte").hidden = alertedEleves.length > 0;
+}
 
 function creerLigne(eleve) {
     // li element
@@ -80,6 +115,7 @@ function creerLigne(eleve) {
         eleve.absences += absent ? 1 : -1;
         spanAbsences.textContent = `${eleve.absences} absence${eleve.absences > 1 ? "s" : ""}`;
         mettreAJourAlerte();
+        updateGlobalStatus();
 
         buttonAbsent.textContent = absent ? "delet absence" : "Absent";
     });
