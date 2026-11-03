@@ -40,13 +40,25 @@ function creerLigne(eleve) {
     spanAbsences.classList.add("block", "text-sm", "text-muted");
     spanAbsences.textContent = `${eleve.absences} absence${eleve.absences > 1 ? "s" : ""}`;
 
+    const badgeParents = document.createElement("span");
+    badgeParents.classList.add("badge", "ml-1", "whitespace-nowrap", "rounded-full", "bg-alert", "px-2", "py-0.5", "text-xs", "font-medium", "text-white");
+    badgeParents.textContent = "Prévenir les parents";
+
+    function mettreAJourAlerte() {
+        const alerte = eleve.absences >= 3;
+        li.classList.toggle("alerte", alerte);
+        badgeParents.hidden = !alerte;
+    }
+
+    mettreAJourAlerte();
+
     // span grade
     const spanGrade = document.createElement("span");
     spanGrade.classList.add("font-serif", "text-xl");
     spanGrade.textContent = (eleve.notes.length === 0) ? "—" : `${Number((eleve.notes.reduce((cr, pr) => pr + cr) / eleve.notes.length).toFixed(1))} / 20`.replace('.', ',');
 
     // append button elements
-    spanInfo.append(spanName, spanAbsences);
+    spanInfo.append(spanName, spanAbsences, badgeParents);
     button.append(spanProfile, spanInfo, spanGrade);
 
     // actions div
@@ -67,6 +79,7 @@ function creerLigne(eleve) {
 
         eleve.absences += absent ? 1 : -1;
         spanAbsences.textContent = `${eleve.absences} absence${eleve.absences > 1 ? "s" : ""}`;
+        mettreAJourAlerte();
 
         buttonAbsent.textContent = absent ? "delet absence" : "Absent";
     });
