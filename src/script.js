@@ -59,6 +59,18 @@ function creerLigne(eleve) {
     buttonAbsent.classList.add("btn-absent", "h-11", "rounded-full", "border", "border-line", "px-3", "sm:px-4", "text-sm", "font-medium", "hover:bg-paper", "hover:cursor-pointer");
     buttonAbsent.textContent = "Absent";
 
+
+    let absent = false;
+
+    buttonAbsent.addEventListener("click", () => {
+        absent = !absent;
+
+        eleve.absences += absent ? 1 : -1;
+        spanAbsences.textContent = `${eleve.absences} absence${eleve.absences > 1 ? "s" : ""}`;
+
+        buttonAbsent.textContent = absent ? "delet absence" : "Absent";
+    });
+
     // input label
     const label = document.createElement("label");
     label.classList.add("flex-1");
@@ -85,12 +97,12 @@ function creerLigne(eleve) {
     buttonNote.type = "button";
     buttonNote.classList.add("btn-note", "h-11", "rounded-full", "bg-ink", "px-3", "sm:px-4", "text-sm", "font-medium", "text-white", "hover:bg-brand", "hover:cursor-pointer");
     buttonNote.textContent = "Ajouter la note";
-    
+
     // p inside the li
     const p = document.createElement("p");
     p.classList.add("message", "mt-2", "text-xs", "text-alert");
     p.setAttribute("hidden", true);
-    
+
     // append to li
     actions.append(buttonAbsent, label, buttonNote);
     div.append(button, actions);
