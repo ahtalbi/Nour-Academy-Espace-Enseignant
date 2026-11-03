@@ -159,3 +159,37 @@ function creerLigne(eleve) {
 
     return li;
 }
+
+// Filter 
+const recherche = document.getElementById("recherche");
+const filtreGroupe = document.getElementById("filtre-groupe");
+const counter = document.getElementById("compteur");
+const noResults = document.getElementById("aucun-resultat");
+
+groupes.forEach(groupe => {
+    const option = document.createElement("option");
+    option.value = groupe.id;
+    option.textContent = groupe.nom;
+    filtreGroupe.append(option);
+});
+
+function applyFilters() {
+    const rechercheTexte = recherche.value.trim().toLowerCase();
+    const groupeSelectionne = filtreGroupe.value;
+
+    const elevesFiltres = eleves.filter(eleve => {
+        return `${eleve.prenom} ${eleve.nom}`.toLowerCase().includes(rechercheTexte) && (!groupeSelectionne || String(eleve.groupeId) === groupeSelectionne);
+    });
+
+    const idsVisibles = new Set(elevesFiltres.map(eleve => String(eleve.id)));
+    elevesElements.forEach(ligne => {
+        ligne.hidden = !idsVisibles.has(ligne.dataset.id);
+    });
+
+    counter.textContent = `${elevesFiltres.length} élève${elevesFiltres.length === 1 ? "" : "s"}`;
+    noResults.hidden = elevesFiltres.length !== 0;
+}
+
+recherche.addEventListener("input", applyFilters);
+filtreGroupe.addEventListener("change", applyFilters);
+applyFilters();
