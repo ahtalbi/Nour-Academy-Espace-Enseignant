@@ -37,8 +37,6 @@ function updateGlobalStatus() {
         ligne.textContent = `${eleve.prenom} ${eleve.nom} — ${eleve.telephoneParent}`;
         listeParents.append(ligne);
     });
-
-    document.getElementById("aucune-alerte").hidden = alertedEleves.length > 0;
 }
 
 function creerLigne(eleve) {
@@ -163,6 +161,7 @@ function creerLigne(eleve) {
 // Filter 
 const recherche = document.getElementById("recherche");
 const filtreGroupe = document.getElementById("filtre-groupe");
+const tri = document.getElementById("tri");
 const counter = document.getElementById("compteur");
 const noResults = document.getElementById("aucun-resultat");
 
@@ -181,9 +180,30 @@ function applyFilters() {
         return `${eleve.prenom} ${eleve.nom}`.toLowerCase().includes(rechercheTexte) && (!groupeSelectionne || String(eleve.groupeId) === groupeSelectionne);
     });
 
-    const idsVisibles = new Set(elevesFiltres.map(eleve => String(eleve.id)));
+    if (tri.value === "nom") {
+        elevesFiltres.sort((a, b) => a.nom.localeCompare(b.nom) || a.prenom.localeCompare(b.prenom));
+    } else if (tri.value === "moyenne") {
+        elevesFiltres.sort((a, b) => {
+            const moyenneA = moyenneEleve(a);
+            const moyenneB = moyenneEleve(b);
+
+            if (moyenneA === null && moyenneB === null) return 0;
+            if (moyenneA === null) return 1;
+            if (moyenneB === null) return -1;
+
+            return moyenneB - moyenneA;
+        });
+    }
+
     elevesElements.forEach(ligne => {
-        ligne.hidden = !idsVisibles.has(ligne.dataset.id);
+        ligne.hidden = !elevesFiltres.some(
+            eleve => String(eleve.id) === ligne.dataset.id
+        );
+    });
+
+    elevesFiltres.forEach(eleve => {
+        const ligne = elevesElements.find(element => element.dataset.id === String(eleve.id));
+        elevesContainer.append(ligne);
     });
 
     counter.textContent = `${elevesFiltres.length} élève${elevesFiltres.length === 1 ? "" : "s"}`;
@@ -192,4 +212,5 @@ function applyFilters() {
 
 recherche.addEventListener("input", applyFilters);
 filtreGroupe.addEventListener("change", applyFilters);
+tri.addEventListener("change", applyFilters);
 applyFilters();
