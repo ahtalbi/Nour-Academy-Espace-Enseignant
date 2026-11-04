@@ -70,7 +70,7 @@ function creerLigne(eleve) {
 
     // span abesence
     const spanAbsences = document.createElement("span");
-    spanAbsences.classList.add("block", "text-sm", "text-muted");
+    spanAbsences.classList.add("student-absences", "block", "text-sm", "text-muted");
     spanAbsences.textContent = `${eleve.absences} absence${eleve.absences > 1 ? "s" : ""}`;
 
     const badgeParents = document.createElement("span");
@@ -103,20 +103,7 @@ function creerLigne(eleve) {
     buttonAbsent.type = "button";
     buttonAbsent.classList.add("btn-absent", "h-11", "rounded-full", "border", "border-line", "px-3", "sm:px-4", "text-sm", "font-medium", "hover:bg-paper", "hover:cursor-pointer");
     buttonAbsent.textContent = "Absent";
-
-
-    let absent = false;
-
-    buttonAbsent.addEventListener("click", () => {
-        absent = !absent;
-
-        eleve.absences += absent ? 1 : -1;
-        spanAbsences.textContent = `${eleve.absences} absence${eleve.absences > 1 ? "s" : ""}`;
-        mettreAJourAlerte();
-        updateGlobalStatus();
-
-        buttonAbsent.textContent = absent ? "delet absence" : "Absent";
-    });
+    buttonAbsent.dataset.action = "absent";
 
     // input label
     const label = document.createElement("label");
@@ -144,6 +131,7 @@ function creerLigne(eleve) {
     buttonNote.type = "button";
     buttonNote.classList.add("btn-note", "h-11", "rounded-full", "bg-ink", "px-3", "sm:px-4", "text-sm", "font-medium", "text-white", "hover:bg-brand", "hover:cursor-pointer");
     buttonNote.textContent = "Ajouter la note";
+    buttonNote.dataset.action = "note";
 
     // p inside the li
     const p = document.createElement("p");
@@ -157,6 +145,46 @@ function creerLigne(eleve) {
 
     return li;
 }
+
+// the listner of buttons absend and note
+elevesContainer.addEventListener("click", event => {
+    const button = event.target.closest("button[data-action]");
+    const ligne = button.closest("li[data-id]");
+    const eleve = eleves.find(item => String(item.id) === ligne.dataset.id);
+
+    if (button.dataset.action === "absent") {
+        eleve.absences += 1;
+
+        const spanAbsences = ligne.querySelector(".student-absences");
+        spanAbsences.textContent = `${eleve.absences} absence${eleve.absences > 1 ? "s" : ""}`;
+
+        const alerte = eleve.absences >= 3;
+        ligne.classList.toggle("alerte", alerte);
+        ligne.querySelector(".badge").hidden = !alerte;
+        updateGlobalStatus();
+        return;
+    }
+
+    if (button.dataset.action === "note") {
+        const input = ligne.querySelector('input[type="number"]');
+        const message = ligne.querySelector(".message");
+        const note = input.value.trim() === "" ? NaN : Number(input.value);
+
+        if (!Number.isFinite(note) || note < 0 || note > 20) {
+            message.hidden = false;
+            return;
+        }
+
+        message.hidden = true;
+        eleve.notes.push(note);
+
+        const moyenne = moyenneEleve(eleve);
+        ligne.querySelector(".btn-fiche .font-serif").textContent = `${Number(moyenne.toFixed(1))} / 20`.replace(".", ",");
+
+        input.value = "";
+        updateGlobalStatus();
+    }
+});
 
 // Filter 
 const recherche = document.getElementById("recherche");
@@ -174,10 +202,10 @@ groupes.forEach(groupe => {
 
 function applyFilters() {
     const rechercheTexte = recherche.value.trim().toLowerCase();
-    const groupeSelectionne = filtreGroupe.value;
+    const groupSelection = filtreGroupe.value;
 
     const elevesFiltres = eleves.filter(eleve => {
-        return `${eleve.prenom} ${eleve.nom}`.toLowerCase().includes(rechercheTexte) && (!groupeSelectionne || String(eleve.groupeId) === groupeSelectionne);
+        return `${eleve.prenom} ${eleve.nom}`.toLowerCase().includes(rechercheTexte) && (!groupSelection || String(eleve.groupeId) === groupSelection);
     });
 
     if (tri.value === "nom") {
