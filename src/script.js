@@ -136,6 +136,8 @@ function creerLigne(eleve) {
     // p inside the li
     const p = document.createElement("p");
     p.classList.add("message", "mt-2", "text-xs", "text-alert");
+    p.textContent = "La note doit être un nombre entre 0 et 20.";
+    p.setAttribute("aria-live", "polite");
     p.setAttribute("hidden", true);
 
     // append to li
@@ -146,22 +148,22 @@ function creerLigne(eleve) {
     return li;
 }
 
-// the listner of buttons absend and note
+const confirmationAbsence = document.getElementById("confirmation-absence");
+const confirmationAbsenceNom = document.getElementById("confirmation-absence-nom");
+let eleveEnAttente = null;
+let ligneEnAttente = null;
+
+// Un seul écouteur délégué traite les boutons des lignes.
 elevesContainer.addEventListener("click", event => {
     const button = event.target.closest("button[data-action]");
     const ligne = button.closest("li[data-id]");
     const eleve = eleves.find(item => String(item.id) === ligne.dataset.id);
 
     if (button.dataset.action === "absent") {
-        eleve.absences += 1;
-
-        const spanAbsences = ligne.querySelector(".student-absences");
-        spanAbsences.textContent = `${eleve.absences} absence${eleve.absences > 1 ? "s" : ""}`;
-
-        const alerte = eleve.absences >= 3;
-        ligne.classList.toggle("alerte", alerte);
-        ligne.querySelector(".badge").hidden = !alerte;
-        updateGlobalStatus();
+        eleveEnAttente = eleve;
+        ligneEnAttente = ligne;
+        confirmationAbsenceNom.textContent = `${eleve.prenom} ${eleve.nom}`;
+        confirmationAbsence.showModal();
         return;
     }
 
@@ -172,10 +174,12 @@ elevesContainer.addEventListener("click", event => {
 
         if (!Number.isFinite(note) || note < 0 || note > 20) {
             message.hidden = false;
+            input.classList.add("note-invalide");
             return;
         }
 
         message.hidden = true;
+        input.classList.remove("note-invalide");
         eleve.notes.push(note);
 
         const moyenne = moyenneEleve(eleve);
@@ -184,6 +188,23 @@ elevesContainer.addEventListener("click", event => {
         input.value = "";
         updateGlobalStatus();
     }
+});
+
+confirmationAbsence.addEventListener("close", () => {
+    if (confirmationAbsence.returnValue === "confirmer" && eleveEnAttente && ligneEnAttente) {
+        eleveEnAttente.absences += 1;
+
+        const spanAbsences = ligneEnAttente.querySelector(".student-absences");
+        spanAbsences.textContent = `${eleveEnAttente.absences} absence${eleveEnAttente.absences > 1 ? "s" : ""}`;
+
+        const alerte = eleveEnAttente.absences >= 3;
+        ligneEnAttente.classList.toggle("alerte", alerte);
+        ligneEnAttente.querySelector(".badge").hidden = !alerte;
+        updateGlobalStatus();
+    }
+
+    eleveEnAttente = null;
+    ligneEnAttente = null;
 });
 
 // Filter 

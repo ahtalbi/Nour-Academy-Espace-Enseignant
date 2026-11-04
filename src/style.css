@@ -43,3 +43,14 @@
     border-color: var(--color-alert);
     background-color: var(--color-alert-soft);
 }
+
+.note-invalide {
+    border-color: var(--color-alert);
+}
+
+.confirmation-dialog {
+    width: 90vw;
+    max-width: 28rem;
+    max-height: 85vh;
+    overflow-y: auto;
+}

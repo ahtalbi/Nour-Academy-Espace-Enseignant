@@ -324,6 +324,16 @@
         </ul>
     </dialog>
 
+    <dialog id="confirmation-absence"
+        class="confirmation-dialog m-auto rounded-3xl bg-card p-6 text-ink shadow-xl backdrop:bg-ink/40">
+        <h2 id="confirmation-absence-titre" class="font-serif text-2xl">Confirmer l’absence</h2>
+        <p class="mt-2 text-sm text-muted">Confirmez-vous que <strong id="confirmation-absence-nom" class="font-semibold text-ink"></strong> est absent·e aujourd’hui ?</p>
+        <form method="dialog" class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <button value="annuler" class="min-h-11 rounded-full border border-line px-5 font-medium hover:bg-paper">Annuler</button>
+            <button value="confirmer" class="min-h-11 rounded-full bg-alert px-5 font-medium text-white hover:opacity-90">Confirmer l’absence</button>
+        </form>
+    </dialog>
+
     <script type="module" src="./src/script.js"></script>
 </body>
 
