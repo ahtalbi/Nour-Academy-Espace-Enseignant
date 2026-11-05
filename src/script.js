@@ -210,6 +210,7 @@ confirmationAbsence.addEventListener("close", () => {
 // Filter 
 const recherche = document.getElementById("recherche");
 const filtreGroupe = document.getElementById("filtre-groupe");
+const selectGroupeEleve = document.getElementById("groupe");
 const tri = document.getElementById("tri");
 const counter = document.getElementById("compteur");
 const noResults = document.getElementById("aucun-resultat");
@@ -219,6 +220,11 @@ groupes.forEach(groupe => {
     option.value = groupe.id;
     option.textContent = groupe.nom;
     filtreGroupe.append(option);
+
+    const optionGroupeEleve = document.createElement("option");
+    optionGroupeEleve.value = groupe.id;
+    optionGroupeEleve.textContent = groupe.nom;
+    selectGroupeEleve.append(optionGroupeEleve);
 });
 
 function applyFilters() {
@@ -377,6 +383,8 @@ function submitFormEleve() {
             messageCode.textContent = "Le code doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial.";
         }
 
-    })
+        console.log(prenom, nom, group);
+    });
+
 }
 submitFormEleve();
