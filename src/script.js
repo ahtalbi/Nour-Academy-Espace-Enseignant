@@ -263,3 +263,120 @@ recherche.addEventListener("input", applyFilters);
 filtreGroupe.addEventListener("change", applyFilters);
 tri.addEventListener("change", applyFilters);
 applyFilters();
+
+// ajouter un eleve
+function submitFormEleve() {
+    const formEleve = document.getElementById("form-eleve");
+    formEleve.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const formData = new FormData(formEleve);
+
+        let prenom = formData.get("prenom");
+        let nom = formData.get("nom");
+        let group = formData.get("groupe");
+        let email = formData.get("email");
+        let telephone = formData.get("telephone");
+        let code = formData.get("code");
+
+        let messagePrenom = document.getElementById("prenom-msg");
+        let messageNom = document.getElementById("nom-msg");
+        let messageGroup = document.getElementById("groupe-msg");
+        let messageEmail = document.getElementById("email-msg");
+        let messageTelephone = document.getElementById("telephone-msg");
+        let messageCode = document.getElementById("code-msg");
+
+        const champPrenom = document.getElementById("prenom").closest(".champ");
+        const champNom = document.getElementById("nom").closest(".champ");
+        const champGroup = document.getElementById("groupe").closest(".champ");
+        const champEmail = document.getElementById("email").closest(".champ");
+        const champTelephone = document.getElementById("telephone").closest(".champ");
+        const champCode = document.getElementById("code").closest(".champ");
+
+        // prenom
+        const prenomNettoye = prenom.trim();
+        const prenomValide = /^[A-Za-z][A-Za-z '-]{1,29}$/.test(prenomNettoye);
+
+        if (prenomValide) {
+            champPrenom.classList.remove("erreur");
+            champPrenom.classList.add("valide");
+            messagePrenom.textContent = "Prénom valide.";
+        } else {
+            champPrenom.classList.remove("valide");
+            champPrenom.classList.add("erreur");
+            messagePrenom.textContent = "Entrez un prénom de 2 à 30 caractères, avec des lettres, espaces, apostrophes ou tirets.";
+        }
+
+        // nom
+        const nomNettoye = nom.trim();
+        const nomValide = /^[A-Za-z][A-Za-z '-]{1,29}$/.test(nomNettoye);
+
+        if (nomValide) {
+            champNom.classList.remove("erreur");
+            champNom.classList.add("valide");
+            messageNom.textContent = "Nom valide.";
+        } else {
+            champNom.classList.remove("valide");
+            champNom.classList.add("erreur");
+            messageNom.textContent = "Entrez un nom de 2 à 30 caractères, avec des lettres, espaces, apostrophes ou tirets.";
+        }
+
+        // groupe
+        const groupeValide = groupes.some(groupe => String(groupe.id) === group);
+
+        if (groupeValide) {
+            champGroup.classList.remove("erreur");
+            champGroup.classList.add("valide");
+            messageGroup.textContent = "Groupe valide.";
+        } else {
+            champGroup.classList.remove("valide");
+            champGroup.classList.add("erreur");
+            messageGroup.textContent = "Choisissez un groupe.";
+        }
+
+        // email
+        const emailInput = document.getElementById("email");
+        const emailValide = email.trim() !== "" && emailInput.checkValidity();
+
+        if (emailValide) {
+            champEmail.classList.remove("erreur");
+            champEmail.classList.add("valide");
+            messageEmail.textContent = "Email valide.";
+        } else {
+            champEmail.classList.remove("valide");
+            champEmail.classList.add("erreur");
+            messageEmail.textContent = "Entrez une adresse email valide, par exemple parent@mail.ma.";
+        }
+
+        // telephone
+        const telephoneNettoye = telephone.trim().replace(/\s/g, "");
+        const telephoneValide = /^(0[67]\d{8}|\+212[67]\d{8})$/.test(telephoneNettoye);
+
+        if (telephoneValide) {
+            champTelephone.classList.remove("erreur");
+            champTelephone.classList.add("valide");
+            messageTelephone.textContent = "Téléphone valide.";
+        } else {
+            champTelephone.classList.remove("valide");
+            champTelephone.classList.add("erreur");
+            messageTelephone.textContent = "Entrez un numéro commençant par 06, 07, +212 6 ou +212 7, suivi de 8 chiffres.";
+        }
+
+        // code
+        const codeValide = code.length >= 8
+            && /[A-Z]/.test(code)
+            && /\d/.test(code)
+            && /[^A-Za-z0-9]/.test(code);
+
+        if (codeValide) {
+            champCode.classList.remove("erreur");
+            champCode.classList.add("valide");
+            messageCode.textContent = "Code valide.";
+        } else {
+            champCode.classList.remove("valide");
+            champCode.classList.add("erreur");
+            messageCode.textContent = "Le code doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial.";
+        }
+
+    })
+}
+submitFormEleve();

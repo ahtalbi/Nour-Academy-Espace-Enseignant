@@ -23,7 +23,8 @@
     /* succès              */
 }
 
-.erreur input {
+.erreur input,
+.erreur select {
     border-color: var(--color-alert);
 }
 
@@ -31,7 +32,8 @@
     color: var(--color-alert);
 }
 
-.valide input {
+.valide input,
+.valide select {
     border-color: var(--color-ok);
 }
 
